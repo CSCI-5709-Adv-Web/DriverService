@@ -5,14 +5,14 @@ export class Driver implements DriverLocation {
   latitude: number
   longitude: number
   timestamp: number
-  isAvailable: boolean
+  isOnline: boolean
 
   constructor(data: DriverLocation) {
     this.driverId = data.driverId
     this.latitude = data.latitude
     this.longitude = data.longitude
     this.timestamp = data.timestamp || Date.now()
-    this.isAvailable = data.isAvailable !== undefined ? data.isAvailable : true
+    this.isOnline = data.isOnline !== undefined ? data.isOnline : true
   }
 
   toJSON(): DriverLocation {
@@ -21,7 +21,7 @@ export class Driver implements DriverLocation {
       latitude: this.latitude,
       longitude: this.longitude,
       timestamp: this.timestamp,
-      isAvailable: this.isAvailable,
+      isOnline: this.isOnline,
     }
   }
 }
