@@ -7,9 +7,37 @@ const router = Router()
 const driverController = new DriverController()
 
 /**
- * @route POST /drivers
- * @desc Create a new driver
- * @access Private
+ * @swagger
+ * /drivers:
+ *   post:
+ *     summary: Create a new driver
+ *     description: Creates a new driver profile in the system
+ *     tags: [Drivers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateDriverRequest'
+ *     responses:
+ *       201:
+ *         description: Driver created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   "/",
@@ -32,9 +60,44 @@ router.post(
 )
 
 /**
- * @route PUT /drivers/:driverId
- * @desc Update an existing driver
- * @access Private
+ * @swagger
+ * /drivers/{driverId}:
+ *   put:
+ *     summary: Update an existing driver
+ *     description: Updates an existing driver's profile information
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: path
+ *         name: driverId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the driver
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateDriverRequest'
+ *     responses:
+ *       200:
+ *         description: Driver updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Driver not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put(
   "/:driverId",
@@ -56,9 +119,25 @@ router.put(
 )
 
 /**
- * @route GET /drivers/all
- * @desc Get all drivers
- * @access Private
+ * @swagger
+ * /drivers/all:
+ *   get:
+ *     summary: Get all drivers
+ *     description: Retrieves a list of all driver profiles
+ *     tags: [Drivers]
+ *     responses:
+ *       200:
+ *         description: List of drivers retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/all", (req, res, next) => {
   logger.info("Get all drivers request received")
@@ -66,11 +145,50 @@ router.get("/all", (req, res, next) => {
 })
 
 /**
- * @route GET /drivers/nearby
- * @desc Find nearby drivers
- * @access Private
- * @headers latitude, longitude
- * @query radius (optional, in km)
+ * @swagger
+ * /drivers/nearby:
+ *   get:
+ *     summary: Find nearby drivers
+ *     description: Finds drivers within a specified radius of the given coordinates
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: header
+ *         name: latitude
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Latitude coordinate
+ *       - in: header
+ *         name: longitude
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Longitude coordinate
+ *       - in: query
+ *         name: radius
+ *         schema:
+ *           type: number
+ *           default: 5
+ *         description: Search radius in kilometers
+ *     responses:
+ *       200:
+ *         description: Nearby drivers found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NearbyDriversResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get(
   "/nearby",
@@ -91,9 +209,50 @@ router.get(
 )
 
 /**
- * @route PATCH /drivers/:driverId/status
- * @desc Set driver status (online/offline)
- * @access Private
+ * @swagger
+ * /drivers/{driverId}/status:
+ *   patch:
+ *     summary: Set driver status
+ *     description: Sets a driver's online/offline status and location if online
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: path
+ *         name: driverId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the driver
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/DriverStatusRequest'
+ *     responses:
+ *       200:
+ *         description: Driver status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Driver not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.patch(
   "/:driverId/status",
@@ -115,10 +274,59 @@ router.patch(
 )
 
 /**
- * @route POST /drivers/location
- * @desc Update driver location
- * @access Private
- * @headers driver-id, latitude, longitude
+ * @swagger
+ * /drivers/location:
+ *   post:
+ *     summary: Update driver location
+ *     description: Updates a driver's current location
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: header
+ *         name: driver-id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the driver
+ *       - in: header
+ *         name: latitude
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Latitude coordinate
+ *       - in: header
+ *         name: longitude
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Longitude coordinate
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isOnline:
+ *                 type: boolean
+ *                 default: true
+ *     responses:
+ *       200:
+ *         description: Driver location updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post(
   "/location",
@@ -139,9 +347,38 @@ router.post(
 )
 
 /**
- * @route GET /drivers/:driverId/details
- * @desc Get complete driver details
- * @access Private
+ * @swagger
+ * /drivers/{driverId}/details:
+ *   get:
+ *     summary: Get driver details
+ *     description: Retrieves complete details for a driver including profile and location
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: path
+ *         name: driverId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the driver
+ *     responses:
+ *       200:
+ *         description: Driver details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Driver not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:driverId/details", (req, res, next) => {
   logger.info("Get driver details request received", { driverId: req.params.driverId })
@@ -149,9 +386,38 @@ router.get("/:driverId/details", (req, res, next) => {
 })
 
 /**
- * @route GET /drivers/:driverId
- * @desc Get driver location
- * @access Private
+ * @swagger
+ * /drivers/{driverId}:
+ *   get:
+ *     summary: Get driver location
+ *     description: Retrieves the current location of a driver
+ *     tags: [Drivers]
+ *     parameters:
+ *       - in: path
+ *         name: driverId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the driver
+ *     responses:
+ *       200:
+ *         description: Driver location retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Driver location not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get("/:driverId", (req, res, next) => {
   logger.info("Get driver location request received", { driverId: req.params.driverId })

@@ -6,6 +6,34 @@ import { STATUS_CODES } from "../utils/error"
 
 const router = Router()
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     description: Returns the health status of the driver service
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Service is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 service:
+ *                   type: string
+ *                   example: driver-service
+ *                 status:
+ *                   type: string
+ *                   example: healthy
+ *                 redis:
+ *                   type: string
+ *                   example: connected
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ */
 router.get("/", (req, res) => {
   try {
     logger.info("Health check initiated")
